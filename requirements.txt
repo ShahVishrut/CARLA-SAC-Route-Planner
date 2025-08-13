@@ -1,0 +1,7 @@
+carla
+numpy==1.18.4
+torch
+opencv-python
+pygame==2.5.2
+gym==0.12.5
+

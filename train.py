@@ -11,7 +11,6 @@ import gym
 import numpy as np
 import itertools
 import torch
-from torch.utils.tensorboard import SummaryWriter
 
 def run():
     try:
@@ -66,12 +65,8 @@ def run():
         replay_buffer = ReplayBuffer(state_dim, batch_size, buffer_size, device)
         model = SAC(8196, state_dim, action_space, args)
 
-        #model.load('weights/model_ep_1400')
-        #ep = 1400
 
         env = SimEnv(visuals=True, **env_params)
-        env.load(model, 5, replay_buffer)
-        ep = 6
 
         while ep < episodes:
             env.create_actors()

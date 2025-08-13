@@ -14,8 +14,6 @@ import math
 import numpy as np
 import carla
 import pygame
-from matplotlib.path import Path
-import skimage
 
 
 def get_speed(vehicle):
@@ -107,20 +105,6 @@ def get_poly_from_info(info):
   poly = np.matmul(R, poly_local).transpose() + np.repeat([[x, y]], 4, axis=0)
   return poly
 
-
-def get_pixels_inside_vehicle(pixel_info, pixel_grid):
-  """
-  Get pixels inside a vehicle, given its pixel level info (x, y, yaw, l, w)
-  :param pixel_info: pixel level info of the vehicle
-  :param pixel_grid: pixel_grid of the image, a tall numpy array pf x, y pixels
-  :return: the pixels that are inside the vehicle
-  """
-  poly = get_poly_from_info(pixel_info)
-  p = Path(poly)  # make a polygon
-  grid = p.contains_points(pixel_grid)
-  isinPoly = np.where(grid == True)
-  pixels = np.take(pixel_grid, isinPoly, axis=0)[0]
-  return pixels
 
 
 def get_lane_dis(waypoints, x, y):
@@ -232,31 +216,7 @@ def set_carla_transform(pose):
   transform.rotation.yaw = pose[2]
   return transform
 
-def display_to_rgb(display, obs_size):
-  """
-  Transform image grabbed from pygame display to an rgb image uint8 matrix
-  :param display: pygame display input
-  :param obs_size: rgb image size
-  :return: rgb image uint8 matrix
-  """
-  rgb = np.fliplr(np.rot90(display, 3))  # flip to regular view
-  rgb = skimage.transform.resize(rgb, (obs_size, obs_size))  # resize
-  rgb = rgb * 255
-  return rgb
 
-def rgb_to_display_surface(rgb, display_size):
-  """
-  Generate pygame surface given an rgb image uint8 matrix
-  :param rgb: rgb image uint8 matrix
-  :param display_size: display size
-  :return: pygame surface
-  """
-  surface = pygame.Surface((display_size, display_size)).convert()
-  display = skimage.transform.resize(rgb, (display_size, display_size), preserve_range=True)
-  display = np.flip(display, axis=1)
-  display = np.rot90(display, 1)
-  pygame.surfarray.blit_array(surface, display)
-  return surface
 
 def grayscale_to_display_surface(gray, display_size):
 
