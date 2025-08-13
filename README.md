@@ -1,6 +1,6 @@
 # Soft Actor-Critic Route Planning in CARLA
 
-Reinforcement learning project that uses the [Soft Actor-Critic (SAC) algorithm](https://arxiv.org/abs/1801.01290) to train an autonomous vehicle in the [CARLA Simulator](carla.org). The objective is to teach the vehicle to navigate intersections and follow map routes based on high-level commands (for example, “turn left at the next intersection”) while using a camera-based state space.
+Reinforcement learning project that uses the [Soft Actor-Critic (SAC) algorithm](https://arxiv.org/abs/1801.01290) to train an autonomous vehicle in the [CARLA Simulator](https://carla.org). The objective is to teach the vehicle to navigate intersections and follow map routes based on high-level commands (for example, “turn left at the next intersection”) while using a camera-based state space.
 
 ## Model Structure
 - CNN used to extract features from image, concatenated with command. Q-network and Policy-networks are trained based on SAC.
