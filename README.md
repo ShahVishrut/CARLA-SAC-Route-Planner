@@ -14,6 +14,4 @@ Reinforcement learning project that uses the [Soft Actor-Critic (SAC) algorithm]
 - Alignment of the vehicle’s angle with the current route direction.
 - Collision avoidance (strong penalties for collisions or unsafe interactions).
 
-## License
-Use of this code is subject to the terms described in the LICENSE file.  
-A huge thank you to the authors of the third-party repositories that made this work possible. They are acknowledged in the THIRD_PARTY_LICENSES file.
+A huge thank you to the authors of the third-party repositories that make this work possible. They are acknowledged in the THIRD_PARTY_LICENSES file.
