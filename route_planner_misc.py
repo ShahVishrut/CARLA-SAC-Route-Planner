@@ -1,5 +1,3 @@
-# Modifications Copyright (c) 2025: Vishrut Shah (vsshah@ucsc.edu)
-#
 # This file is modified from <https://github.com/cjy1992/gym-carla>
 # Copyright (c) 2019: Jianyu Chen (jianyuchen@berkeley.edu).
 #
