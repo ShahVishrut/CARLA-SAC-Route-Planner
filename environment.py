@@ -117,6 +117,7 @@ class SimEnv(object):
     def generate_episode(self, model, replay_buffer, ep, evaluate=True):
         with CarlaSyncMode(self.world, self.camera_rgb, self.camera_rgb_vis, self.collision_sensor, fps=30) as sync_mode:
             counter = 0
+            episode_reward = 0
 
             self.last_dist = 0
             self.last_diff = 0
@@ -127,7 +128,7 @@ class SimEnv(object):
             if snapshot is None or image_rgb is None:
                 print("No data, skipping episode")
                 self.reset()
-                return None
+                return (episode_reward, counter)
 
             planner = RoutePlanner(self.vehicle, 16)
 
@@ -149,7 +150,7 @@ class SimEnv(object):
             while True:
                 if self.visuals:
                     if should_quit():
-                        return
+                        return (episode_reward, counter)
                     self.clock.tick_busy_loop(30)
 
                 vehicle_location = self.vehicle.get_location()
@@ -211,6 +212,7 @@ class SimEnv(object):
                 done = 1 if collision else 0
 
                 self.total_rewards += reward
+                episode_reward += reward
 
                 next_state = (image, next_turn)
 
@@ -237,6 +239,8 @@ class SimEnv(object):
             
             if ep % self.save_freq == 0 and ep > 0:
                 self.save(model, ep, replay_buffer)
+
+        return (episode_reward, counter)
 
     def save(self, model, ep, replay_buffer):
         avg_reward = self.total_rewards / self.save_freq

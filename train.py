@@ -70,8 +70,10 @@ def run():
 
         while ep < episodes:
             env.create_actors()
-            env.generate_episode(model, replay_buffer, ep, evaluate=False)
+            rw, ct = env.generate_episode(model, replay_buffer, ep, evaluate=False)
             env.reset()
+            with open("training_log.csv", "a") as f:
+                f.write(f"{ep},{rw},{ct}\n")
             ep += 1
     finally:
         env.quit()
