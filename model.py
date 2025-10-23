@@ -128,18 +128,21 @@ class GaussianPolicy(nn.Module):
 
 
 class SAC(object):
-    def __init__(self, num_inputs, state_dim, action_space, args):
+    def __init__(self, num_inputs, state_dim, action_space):
 
         self.iterations = 0
-        self.gamma = args.gamma
-        self.tau = args.tau
-        self.alpha = args.alpha
+        self.gamma = 0.99
+        self.tau = 0.005
+        self.alpha = 0.2
 
         self.state_shape = (-1,) + state_dim
 
-        self.policy_type = args.policy
-        self.target_update_interval = args.target_update_interval
-        self.automatic_entropy_tuning = args.automatic_entropy_tuning
+        self.policy_type = "Gaussian"
+        self.target_update_interval = 1
+        self.automatic_entropy_tuning = False
+
+        self.hidden_size = 256
+        self.lr = 0.0003
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.convnet = ConvNet(in_channels=1).to(self.device)
@@ -149,20 +152,20 @@ class SAC(object):
 
         self.feature_dim = 8192 + 4
 
-        self.critic = QNetwork(self.feature_dim, action_space.shape[0], args.hidden_size).to(device=self.device)
-        self.critic_optim = Adam(list(self.critic.parameters()) + list(self.convnet.parameters()), lr=args.lr)
+        self.critic = QNetwork(self.feature_dim, action_space.shape[0], self.hidden_size).to(device=self.device)
+        self.critic_optim = Adam(list(self.critic.parameters()) + list(self.convnet.parameters()), lr=self.lr)
 
-        self.critic_target = QNetwork(self.feature_dim, action_space.shape[0], args.hidden_size).to(self.device)
+        self.critic_target = QNetwork(self.feature_dim, action_space.shape[0], self.hidden_size).to(self.device)
         hard_update(self.critic_target, self.critic)
 
             # Target Entropy = −dim(A) (e.g. , -6 for HalfCheetah-v2) as given in the paper
         if self.automatic_entropy_tuning is True:
             self.target_entropy = -torch.prod(torch.Tensor(action_space.shape).to(self.device)).item()
             self.log_alpha = torch.zeros(1, requires_grad=True, device=self.device)
-            self.alpha_optim = Adam([self.log_alpha], lr=args.lr)
+            self.alpha_optim = Adam([self.log_alpha], lr=self.lr)
 
-        self.policy = GaussianPolicy(self.feature_dim, action_space.shape[0], args.hidden_size, action_space).to(self.device)
-        self.policy_optim = Adam(self.policy.parameters(), lr=args.lr)
+        self.policy = GaussianPolicy(self.feature_dim, action_space.shape[0], self.hidden_size, action_space).to(self.device)
+        self.policy_optim = Adam(self.policy.parameters(), lr=self.lr)
 
 
     def select_action(self, state, evaluate=False):
