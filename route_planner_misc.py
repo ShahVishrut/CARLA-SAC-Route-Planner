@@ -214,9 +214,3 @@ def set_carla_transform(pose):
   transform.rotation.yaw = pose[2]
   return transform
 
-
-
-def grayscale_to_display_surface(gray, display_size):
-
-  return rgb_to_display_surface(np.stack((gray, gray, gray), axis=2), display_size)
-
