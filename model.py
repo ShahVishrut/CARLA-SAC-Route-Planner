@@ -269,20 +269,22 @@ class SAC(object):
 
     def load(self, filename):
         print('Loading models from {}'.format(filename))
-        checkpoint = torch.load(filename)
+        checkpoint = torch.load(filename, map_location=self.device)
+
         self.policy.load_state_dict(checkpoint['policy_state_dict'])
         self.critic.load_state_dict(checkpoint['critic_state_dict'])
         self.critic_target.load_state_dict(checkpoint['critic_target_state_dict'])
         self.convnet.load_state_dict(checkpoint['convnet_state_dict'])
         self.convnet_target.load_state_dict(checkpoint['convnet_target_state_dict'])
+
         self.critic_optim.load_state_dict(checkpoint['critic_optimizer_state_dict'])
         self.policy_optim.load_state_dict(checkpoint['policy_optimizer_state_dict'])
 
         self.iterations = checkpoint.get('iterations', 0)
         self.alpha = checkpoint.get('alpha', self.alpha)
 
-        if self.automatic_entropy_tuning:
-            self.log_alpha.data.copy_(checkpoint['log_alpha'].to(self.device))
-            self.alpha_optim.load_state_dict(checkpoint['alpha_optimizer_state_dict'])
+        if self.automatic_entropy_tuning and 'log_alpha' in checkpoint and checkpoint['log_alpha'] is not None:
+            self.log_alpha = checkpoint['log_alpha'].to(self.device).requires_grad_()
 
-
+            if 'alpha_optimizer_state_dict' in checkpoint and checkpoint['alpha_optimizer_state_dict'] is not None:
+                self.alpha_optim.load_state_dict(checkpoint['alpha_optimizer_state_dict'])
